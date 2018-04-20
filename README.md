@@ -1,4 +1,5 @@
-# FMMLIB2D
+# FMMLIB2D 
+[![Build Status](https://travis-ci.org/ludvigak/FMMLIB2D.jl.svg?branch=master)](https://travis-ci.org/ludvigak/FMMLIB2D.jl)
 
 This is a Julia interface to the Fast Multipole Method (FMM) library
 [FMMLIB2D](https://github.com/zgimbutas/fmmlib2d) by Leslie Greengard and Zydrunas
