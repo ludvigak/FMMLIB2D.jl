@@ -1,3 +1,4 @@
+__precompile__()
 module FMMLIB2D
 
 export lfmm2d, rfmm2d
