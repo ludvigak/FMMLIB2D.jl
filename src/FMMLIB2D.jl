@@ -1,9 +1,10 @@
 __precompile__()
 module FMMLIB2D
 
-export lfmm2d, rfmm2d
+export lfmm2d, rfmm2d, hfmm2d
 export lfmm2dparttarg, lfmm2dpartself
 export rfmm2dparttarg, rfmm2dpartself
+export hfmm2dparttarg
 
 const depsfile = joinpath(dirname(@__DIR__), "deps", "deps.jl")
 if isfile(depsfile)
@@ -24,11 +25,13 @@ end
 ## KEYWORD INTERFACES
 
 """
-    lfmm2d(;source, target, charge, dipstr, dipvec, tol,
-            ifpot, ifgrad, ifhess,
-            ifpottarg, ifgradtarg, ifhesstarg)
+    U = lfmm2d(;source, target, charge, dipstr, dipvec, tol,
+                ifpot, ifgrad, ifhess,
+                ifpottarg, ifgradtarg, ifhesstarg)
 
     Laplace particle target FMM in R^2 (complex). Keyword interface.
+
+    Returns: U::FMMLIB2D.FMMOutput
 """
 function lfmm2d(;
     source::Array{Float64} = zeros(2, 0),
@@ -57,11 +60,13 @@ function lfmm2d(;
 end
 
 """
-    lfmm2d(;source, target, charge, dipstr, dipvec, tol,
-            ifpot, ifgrad, ifhess,
-            ifpottarg, ifgradtarg, ifhesstarg)
+    U = rfmm2d(;source, target, charge, dipstr, dipvec, tol,
+                ifpot, ifgrad, ifhess,
+                ifpottarg, ifgradtarg, ifhesstarg)
 
     Laplace particle target FMM in R^2 (real). Keyword interface.
+
+    Returns: U::FMMLIB2D.FMMOutput
 """
 function rfmm2d(;
     source::Array{Float64} = zeros(2, 0),
@@ -85,6 +90,44 @@ function rfmm2d(;
     # Call FMM and pack output
     pot, grad, hess, pottarg, gradtarg, hesstarg =        
         rfmm2dparttarg(iprec, source, ifcharge, charge, ifdipole, dipstr, dipvec, ifpot,
+                       ifgrad, ifhess, target, ifpottarg, ifgradtarg, ifhesstarg)    
+    return FMMOutput(pot, grad, hess, pottarg, gradtarg, hesstarg)
+end
+
+"""
+    U = hfmm2d(;source, target, charge, dipstr, dipvec, 
+                tol, zk,
+                ifpot, ifgrad, ifhess,
+                ifpottarg, ifgradtarg, ifhesstarg)
+
+    Helmholtz particle target FMM in R^2. Keyword interface.
+
+    Returns: U::FMMLIB2D.FMMOutput
+"""
+function hfmm2d(;
+                source::Array{Float64} = zeros(2, 0),
+                target::Array{Float64} = zeros(2, 0),
+                charge::Array{Complex128} = zeros(Complex128, 0),
+                dipstr::Array{Complex128} = zeros(Complex128, 0),
+                dipvec::Array{Float64} = zeros(2, 0),   
+                tol::Float64 = 1e-15,
+                zk::Complex128 = complex(0.0),
+                ifpot::Bool = true,
+                ifgrad::Bool = false,
+                ifhess::Bool = false,
+                ifpottarg::Bool = true,
+                ifgradtarg::Bool = false,
+                ifhesstarg::Bool = false
+                )
+    @assert zk != 0
+    # Parse keywords
+    iprec, source, ifcharge, charge, ifdipole, dipstr, dipvec, ifpot, ifgrad, ifhess,
+    target, ifpottarg, ifgradtarg, ifhesstarg =
+        parse_keywords(tol, source, charge, dipstr, dipvec, ifpot, ifgrad, ifhess,
+                       target, ifpottarg, ifgradtarg, ifhesstarg)
+    # Call FMM and pack output
+    pot, grad, hess, pottarg, gradtarg, hesstarg =        
+        hfmm2dparttarg(iprec, zk, source, ifcharge, charge, ifdipole, dipstr, dipvec, ifpot,
                        ifgrad, ifhess, target, ifpottarg, ifgradtarg, ifhesstarg)    
     return FMMOutput(pot, grad, hess, pottarg, gradtarg, hesstarg)
 end
@@ -301,6 +344,88 @@ function rfmm2dpartself(iprec::Int64,
                        target, ifpottarg, ifgradtarg, ifhesstarg)
     return pot, grad, hess
 end
+
+"""
+    pot, grad, hess, pottarg, gradtarg, hesstarg = 
+        hfmm2dparttarg( iprec, zk, source, ifcharge, charge, 
+                        ifdipole, dipstr, dipvec, 
+                        ifpot, ifgrad, ifhess, 
+                        target, ifpottarg, ifgradtarg, ifhesstarg)
+
+    Helmholtz particle target FMM in R^2. Direct library interface.
+"""
+function hfmm2dparttarg(iprec::Int64,
+                        zk::Complex128,
+                        source::Array{Float64},
+                        ifcharge::Int64,
+                        charge::Array{Complex128},
+                        ifdipole::Int64,
+                        dipstr::Array{Complex128},
+                        dipvec::Array{Float64},
+                        ifpot::Int64,
+                        ifgrad::Int64,
+                        ifhess::Int64,
+                        target::Array{Float64},
+                        ifpottarg::Int64,
+                        ifgradtarg::Int64,
+                        ifhesstarg::Int64)
+    # Size checks
+    nsource = size(source, 2)
+    @assert size(source, 1) == 2
+    if ifcharge != 0
+        @assert length(charge) == nsource
+    end
+    if ifdipole != 0
+        @assert length(dipstr) == nsource
+        @assert size(dipvec) == (2, nsource)
+    end
+    ntarget = size(target, 2)
+    @assert size(source, 1) == 2
+    # Prepare output structures, only allocate those needed
+    ier = 0
+    pot = zeros(Complex128, nsource * (ifpot!=0 ? 1 : 0) )
+    grad = zeros(Complex128, 2, nsource * (ifgrad!=0 ? 1 : 0) )
+    hess = zeros(Complex128, 3, nsource * (ifhess!=0 ? 1 : 0) )
+    pottarg = Array{Complex128}(ntarget * (ifpottarg!=0 ? 1 : 0) )
+    gradtarg = Array{Complex128}(2, ntarget * (ifgradtarg!=0 ? 1 : 0) )
+    hesstarg = Array{Complex128}(3, ntarget * (ifhesstarg!=0 ? 1 : 0) )
+    # Library call
+    ccall( (:hfmm2dparttarg_, fmmlib2d), Void,
+           (Ref{Int64}, # ier
+            Ref{Int64}, # iprec
+            Ref{Complex128}, # zk            
+            Ref{Int64}, # nsource
+            Ref{Float64}, # source
+            Ref{Int64}, # ifcharge
+            Ref{Complex128}, #charge
+            Ref{Int64}, # ifdipole
+            Ref{Complex128}, #dipstr
+            Ref{Float64}, #dipvec
+            Ref{Int64}, # ifpot
+            Ref{Complex128}, # pot
+            Ref{Int64}, # ifgrad
+            Ref{Complex128}, #grad
+            Ref{Int64}, # ifhess
+            Ref{Complex128}, #hess
+            Ref{Int64}, # ntarget
+            Ref{Float64}, # target
+            Ref{Int64}, # ifpottarg
+            Ref{Complex128}, # pottarg
+            Ref{Int64}, # ifgradtarg
+            Ref{Complex128}, # gradtarg
+            Ref{Int64}, # ifhesstarg
+            Ref{Complex128}, # hesstarg
+            ),
+           ier,iprec,zk,nsource,source,
+           ifcharge,charge,ifdipole,dipstr,dipvec,
+           ifpot,pot,ifgrad,grad,ifhess,hess,
+           ntarget,target,ifpottarg,pottarg,ifgradtarg,gradtarg,ifhesstarg,hesstarg
+           )
+    # Check and return
+    @assert ier == 0    
+    return pot, grad, hess, pottarg, gradtarg, hesstarg
+end
+
 
 ## HELPER FUNCTIONS
 

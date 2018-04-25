@@ -3,7 +3,6 @@ using Base.Test
 
 srand(0)
 
-# TODO: Include dipoles
 # TODO: Compute gradient and hessian
 
 function direct_self(source, charge, dipvec, dipstr)

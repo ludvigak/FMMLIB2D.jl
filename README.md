@@ -8,11 +8,12 @@ Gimbutas.
 
 Documentation for the library can be found in the [FMMLIB2D User's Guide](https://github.com/ludvigak/fmmlib2d/blob/master/doc/fmm2dpart_manual.pdf).
 
-This package currently provides interfaces to the real and complex Laplace FMM's: `rfmm2dpartself`, `rfmm2dparttarg`, `lfmm2dpartself`, `lfmm2dparttarg`.
+This package currently provides interfaces to the FMM's for Laplace (real and complex) and Helmholtz: 
+`rfmm2dpartself`, `rfmm2dparttarg`, `lfmm2dpartself`, `lfmm2dparttarg`, `hfmm2dparttarg`
 
 The most convenient way of calling them are through the Julia interfaces with keyword arguments:
 
-Real FMM:
+Real Laplace FMM:
 ```
 U = rfmm2d(source::Array{Float64} = ...,
            target::Array{Float64} = ...,
@@ -31,7 +32,7 @@ Example:
 U = fmm2d(source=x, charge=q, target=y, ifpottarg=true, tol=1e-9)
 ```
 
-Complex FMM:
+Complex Laplace FMM:
 ```
 U = lfmm2d(source::Array{Float64} = ...,
            target::Array{Float64} = ...,
@@ -39,6 +40,24 @@ U = lfmm2d(source::Array{Float64} = ...,
            dipstr::Array{Complex128} = ...,
            dipvec::Array{Float64} = ...,
            tol::Float64 = ...,
+           ifpot::Bool = ...,
+           ifgrad::Bool = ...,
+           ifhess::Bool = ...,
+           ifpottarg::Bool = ...,
+           ifgradtarg::Bool = ...,
+           ifhesstarg::Bool = ...,
+           )
+```
+
+Helmholtz FMM:
+```
+U = hfmm2d(source::Array{Float64} = ...,
+           target::Array{Float64} = ...,
+           charge::Array{Complex128} = ...,
+           dipstr::Array{Complex128} = ...,
+           dipvec::Array{Float64} = ...,
+           tol::Float64 = ...,
+		   zk::Complex128 = ...,
            ifpot::Bool = ...,
            ifgrad::Bool = ...,
            ifhess::Bool = ...,
