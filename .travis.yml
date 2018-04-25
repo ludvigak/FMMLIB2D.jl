@@ -1,15 +1,13 @@
 ## Documentation: http://docs.travis-ci.com/user/languages/julia/
 language: julia
-sudo: required
-before_install:
-  - sudo apt-get install gfortran
 os:
   - linux
+  - osx
 julia:
   - 0.6
   - nightly
 notifications:
-  email: true
+  email: false
 git:
   depth: 99999999
 
@@ -20,12 +18,12 @@ git:
 #  - julia: nightly
 
 ## uncomment and modify the following lines to manually install system packages
-#addons:
-#  apt: # apt-get for linux
-#    packages:
-#    - gfortran
-#before_script: # homebrew for mac
-#  - if [ $TRAVIS_OS_NAME = osx ]; then brew install gcc; fi
+addons:
+  apt: # apt-get for linux
+    packages:
+    - gfortran
+before_script: # homebrew for mac
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update && brew cask uninstall --force oclint && brew install gcc; fi
 
 ## uncomment the following lines to override the default test script
 #script:
@@ -34,4 +32,4 @@ after_success:
   # push coverage results to Coveralls
   - julia -e 'cd(Pkg.dir("FMMLIB2D")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
   # push coverage results to Codecov
-  - julia -e 'cd(Pkg.dir("FMMLIB2D")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
+  #- julia -e 'cd(Pkg.dir("FMMLIB2D")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
