@@ -1,6 +1,8 @@
 __precompile__()
 module FMMLIB2D
 
+using Compat
+
 export lfmm2d, rfmm2d, hfmm2d
 export lfmm2dparttarg, lfmm2dpartself
 export rfmm2dparttarg, rfmm2dpartself
