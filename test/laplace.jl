@@ -1,12 +1,14 @@
 using FMMLIB2D
-using Base.Test
+using LinearAlgebra
+using Random
+using Test
 
-srand(0)
+Random.seed!(0)
 
 # TODO: Compute gradient and hessian
 
 function direct_self(source, charge, dipvec, dipstr)
-    pot = zeros(charge)
+    pot = zero(charge)
     N = size(source, 2)
     for i=1:N
         for j=1:N

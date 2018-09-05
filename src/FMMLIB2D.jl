@@ -36,8 +36,8 @@ end
 function lfmm2d(;
     source::Array{Float64} = zeros(2, 0),
     target::Array{Float64} = zeros(2, 0),
-    charge::Array{Complex128} = zeros(Complex128, 0),
-    dipstr::Array{Complex128} = zeros(Complex128, 0),
+    charge::Array{ComplexF64} = zeros(ComplexF64, 0),
+    dipstr::Array{ComplexF64} = zeros(ComplexF64, 0),
     dipvec::Array{Float64} = zeros(2, 0),   
     tol::Float64 = 1e-15,
     ifpot::Bool = true,
@@ -107,11 +107,11 @@ end
 function hfmm2d(;
                 source::Array{Float64} = zeros(2, 0),
                 target::Array{Float64} = zeros(2, 0),
-                charge::Array{Complex128} = zeros(Complex128, 0),
-                dipstr::Array{Complex128} = zeros(Complex128, 0),
+                charge::Array{ComplexF64} = zeros(ComplexF64, 0),
+                dipstr::Array{ComplexF64} = zeros(ComplexF64, 0),
                 dipvec::Array{Float64} = zeros(2, 0),   
                 tol::Float64 = 1e-15,
-                zk::Complex128 = complex(0.0),
+                zk::ComplexF64 = complex(0.0),
                 ifpot::Bool = true,
                 ifgrad::Bool = false,
                 ifhess::Bool = false,
@@ -146,9 +146,9 @@ end
 function lfmm2dparttarg(iprec::Int64,
                         source::Array{Float64},
                         ifcharge::Int64,
-                        charge::Array{Complex128},
+                        charge::Array{ComplexF64},
                         ifdipole::Int64,
-                        dipstr::Array{Complex128},
+                        dipstr::Array{ComplexF64},
                         dipvec::Array{Float64},
                         ifpot::Int64,
                         ifgrad::Int64,
@@ -171,37 +171,37 @@ function lfmm2dparttarg(iprec::Int64,
     @assert size(source, 1) == 2
     # Prepare output structures, only allocate those needed
     ier = 0
-    pot = zeros(Complex128, nsource * (ifpot!=0 ? 1 : 0) )
-    grad = zeros(Complex128, 2, nsource * (ifgrad!=0 ? 1 : 0) )
-    hess = zeros(Complex128, 3, nsource * (ifhess!=0 ? 1 : 0) )
-    pottarg = Array{Complex128}(ntarget * (ifpottarg!=0 ? 1 : 0) )
-    gradtarg = Array{Complex128}(2, ntarget * (ifgradtarg!=0 ? 1 : 0) )
-    hesstarg = Array{Complex128}(3, ntarget * (ifhesstarg!=0 ? 1 : 0) )
+    pot = zeros(ComplexF64, nsource * (ifpot!=0 ? 1 : 0) )
+    grad = zeros(ComplexF64, 2, nsource * (ifgrad!=0 ? 1 : 0) )
+    hess = zeros(ComplexF64, 3, nsource * (ifhess!=0 ? 1 : 0) )
+    pottarg = Array{ComplexF64}(undef, ntarget * (ifpottarg!=0 ? 1 : 0) )
+    gradtarg = Array{ComplexF64}(undef, 2, ntarget * (ifgradtarg!=0 ? 1 : 0) )
+    hesstarg = Array{ComplexF64}(undef, 3, ntarget * (ifhesstarg!=0 ? 1 : 0) )
     # Library call
-    ccall( (:lfmm2dparttarg_, fmmlib2d), Void,
+    ccall( (:lfmm2dparttarg_, fmmlib2d), Nothing,
            (Ref{Int64}, # ier
             Ref{Int64}, # iprec
             Ref{Int64}, # nsource
             Ref{Float64}, # source
             Ref{Int64}, # ifcharge
-            Ref{Complex128}, #charge
+            Ref{ComplexF64}, #charge
             Ref{Int64}, # ifdipole
-            Ref{Complex128}, #dipstr
+            Ref{ComplexF64}, #dipstr
             Ref{Float64}, #dipvec
             Ref{Int64}, # ifpot
-            Ref{Complex128}, # pot
+            Ref{ComplexF64}, # pot
             Ref{Int64}, # ifgrad
-            Ref{Complex128}, #grad
+            Ref{ComplexF64}, #grad
             Ref{Int64}, # ifhess
-            Ref{Complex128}, #hess
+            Ref{ComplexF64}, #hess
             Ref{Int64}, # ntarget
             Ref{Float64}, # target
             Ref{Int64}, # ifpottarg
-            Ref{Complex128}, # pottarg
+            Ref{ComplexF64}, # pottarg
             Ref{Int64}, # ifgradtarg
-            Ref{Complex128}, # gradtarg
+            Ref{ComplexF64}, # gradtarg
             Ref{Int64}, # ifhesstarg
-            Ref{Complex128}, # hesstarg
+            Ref{ComplexF64}, # hesstarg
             ),
            ier,iprec,nsource,source,
            ifcharge,charge,ifdipole,dipstr,dipvec,
@@ -223,9 +223,9 @@ end
 function lfmm2dpartself(iprec::Int64,
                         source::Array{Float64},
                         ifcharge::Int64,
-                        charge::Array{Complex128},
+                        charge::Array{ComplexF64},
                         ifdipole::Int64,
-                        dipstr::Array{Complex128},
+                        dipstr::Array{ComplexF64},
                         dipvec::Array{Float64},
                         ifpot::Int64,
                         ifgrad::Int64,
@@ -279,11 +279,11 @@ function rfmm2dparttarg(iprec::Int64,
     pot = zeros(Float64, nsource * (ifpot!=0 ? 1 : 0) )
     grad = zeros(Float64, 2, nsource * (ifgrad!=0 ? 1 : 0) )
     hess = zeros(Float64, 3, nsource * (ifhess!=0 ? 1 : 0) )
-    pottarg = Array{Float64}(ntarget * (ifpottarg!=0 ? 1 : 0) )
-    gradtarg = Array{Float64}(2, ntarget * (ifgradtarg!=0 ? 1 : 0) )
-    hesstarg = Array{Float64}(3, ntarget * (ifhesstarg!=0 ? 1 : 0) )
+    pottarg = Array{Float64}(undef, ntarget * (ifpottarg!=0 ? 1 : 0) )
+    gradtarg = Array{Float64}(undef, 2, ntarget * (ifgradtarg!=0 ? 1 : 0) )
+    hesstarg = Array{Float64}(undef, 3, ntarget * (ifhesstarg!=0 ? 1 : 0) )
     # Library call
-    ccall( (:rfmm2dparttarg_, fmmlib2d), Void,
+    ccall( (:rfmm2dparttarg_, fmmlib2d), Nothing,
            (Ref{Int64}, # ier
             Ref{Int64}, # iprec
             Ref{Int64}, # nsource
@@ -355,12 +355,12 @@ end
     Helmholtz particle target FMM in R^2. Direct library interface.
 """
 function hfmm2dparttarg(iprec::Int64,
-                        zk::Complex128,
+                        zk::ComplexF64,
                         source::Array{Float64},
                         ifcharge::Int64,
-                        charge::Array{Complex128},
+                        charge::Array{ComplexF64},
                         ifdipole::Int64,
-                        dipstr::Array{Complex128},
+                        dipstr::Array{ComplexF64},
                         dipvec::Array{Float64},
                         ifpot::Int64,
                         ifgrad::Int64,
@@ -383,38 +383,38 @@ function hfmm2dparttarg(iprec::Int64,
     @assert size(source, 1) == 2
     # Prepare output structures, only allocate those needed
     ier = 0
-    pot = zeros(Complex128, nsource * (ifpot!=0 ? 1 : 0) )
-    grad = zeros(Complex128, 2, nsource * (ifgrad!=0 ? 1 : 0) )
-    hess = zeros(Complex128, 3, nsource * (ifhess!=0 ? 1 : 0) )
-    pottarg = Array{Complex128}(ntarget * (ifpottarg!=0 ? 1 : 0) )
-    gradtarg = Array{Complex128}(2, ntarget * (ifgradtarg!=0 ? 1 : 0) )
-    hesstarg = Array{Complex128}(3, ntarget * (ifhesstarg!=0 ? 1 : 0) )
+    pot = zeros(ComplexF64, nsource * (ifpot!=0 ? 1 : 0) )
+    grad = zeros(ComplexF64, 2, nsource * (ifgrad!=0 ? 1 : 0) )
+    hess = zeros(ComplexF64, 3, nsource * (ifhess!=0 ? 1 : 0) )
+    pottarg = Array{ComplexF64}(undef, ntarget * (ifpottarg!=0 ? 1 : 0) )
+    gradtarg = Array{ComplexF64}(undef, 2, ntarget * (ifgradtarg!=0 ? 1 : 0) )
+    hesstarg = Array{ComplexF64}(undef, 3, ntarget * (ifhesstarg!=0 ? 1 : 0) )
     # Library call
-    ccall( (:hfmm2dparttarg_, fmmlib2d), Void,
+    ccall( (:hfmm2dparttarg_, fmmlib2d), Nothing,
            (Ref{Int64}, # ier
             Ref{Int64}, # iprec
-            Ref{Complex128}, # zk            
+            Ref{ComplexF64}, # zk            
             Ref{Int64}, # nsource
             Ref{Float64}, # source
             Ref{Int64}, # ifcharge
-            Ref{Complex128}, #charge
+            Ref{ComplexF64}, #charge
             Ref{Int64}, # ifdipole
-            Ref{Complex128}, #dipstr
+            Ref{ComplexF64}, #dipstr
             Ref{Float64}, #dipvec
             Ref{Int64}, # ifpot
-            Ref{Complex128}, # pot
+            Ref{ComplexF64}, # pot
             Ref{Int64}, # ifgrad
-            Ref{Complex128}, #grad
+            Ref{ComplexF64}, #grad
             Ref{Int64}, # ifhess
-            Ref{Complex128}, #hess
+            Ref{ComplexF64}, #hess
             Ref{Int64}, # ntarget
             Ref{Float64}, # target
             Ref{Int64}, # ifpottarg
-            Ref{Complex128}, # pottarg
+            Ref{ComplexF64}, # pottarg
             Ref{Int64}, # ifgradtarg
-            Ref{Complex128}, # gradtarg
+            Ref{ComplexF64}, # gradtarg
             Ref{Int64}, # ifhesstarg
-            Ref{Complex128}, # hesstarg
+            Ref{ComplexF64}, # hesstarg
             ),
            ier,iprec,zk,nsource,source,
            ifcharge,charge,ifdipole,dipstr,dipvec,
