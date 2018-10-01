@@ -9,10 +9,16 @@ Gimbutas.
 
 Documentation for the library can be found in the [FMMLIB2D User's Guide](https://github.com/ludvigak/fmmlib2d/blob/master/doc/fmm2dpart_manual.pdf).
 
-This package currently provides interfaces to the FMM's for Laplace (real and complex) and Helmholtz: 
-`rfmm2dpartself`, `rfmm2dparttarg`, `lfmm2dpartself`, `lfmm2dparttarg`, `hfmm2dparttarg`
+This package currently provides interfaces to the FMM's for Laplace (real and complex), Helmholtz, and complex sums: 
+`rfmm2dpartself`, `rfmm2dparttarg`, `lfmm2dpartself`, `lfmm2dparttarg`, `hfmm2dparttarg`, `zfmm2dparttarg`
 
-The most convenient way of calling them are through the Julia interfaces with keyword arguments:
+The most convenient way of calling them is through the Julia interfaces with keyword arguments, e.g. 
+```julia
+x = rand(2, 10)
+y = rand(2, 20)
+q = rand(10) + 1im*rand(10)
+U = lfmm2d(source=x, charge=q, target=y, ifgradtarg=true, tol=1e-9)
+```
 
 ### Real Laplace FMM:
 ```julia
@@ -29,11 +35,6 @@ U = rfmm2d(source::Array{Float64} = ...,
            ifgradtarg::Bool = ...,
            ifhesstarg::Bool = ...,
            )
-```
-
-Example:
-```julia
-U = fmm2d(source=x, charge=q, target=y, ifpottarg=true, tol=1e-9)
 ```
 
 Output format:
