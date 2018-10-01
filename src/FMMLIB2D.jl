@@ -3,10 +3,11 @@ module FMMLIB2D
 
 using Compat
 
-export lfmm2d, rfmm2d, hfmm2d
+export lfmm2d, rfmm2d, hfmm2d, zfmm2d
 export lfmm2dparttarg, lfmm2dpartself
 export rfmm2dparttarg, rfmm2dpartself
 export hfmm2dparttarg
+export zfmm2dparttarg
 
 const depsfile = joinpath(dirname(@__DIR__), "deps", "deps.jl")
 if isfile(depsfile)
@@ -31,9 +32,9 @@ end
                 ifpot, ifgrad, ifhess,
                 ifpottarg, ifgradtarg, ifhesstarg)
 
-    Laplace particle target FMM in R^2 (complex). Keyword interface.
+Laplace particle target FMM in R^2 (complex). Keyword interface.
 
-    Returns: U::FMMLIB2D.FMMOutput
+Returns: U::FMMLIB2D.FMMOutput
 """
 function lfmm2d(;
     source::Array{Float64} = zeros(2, 0),
@@ -66,9 +67,9 @@ end
                 ifpot, ifgrad, ifhess,
                 ifpottarg, ifgradtarg, ifhesstarg)
 
-    Laplace particle target FMM in R^2 (real). Keyword interface.
+Laplace particle target FMM in R^2 (real). Keyword interface.
 
-    Returns: U::FMMLIB2D.FMMOutput
+Returns: U::FMMLIB2D.FMMOutput
 """
 function rfmm2d(;
     source::Array{Float64} = zeros(2, 0),
@@ -102,9 +103,9 @@ end
                 ifpot, ifgrad, ifhess,
                 ifpottarg, ifgradtarg, ifhesstarg)
 
-    Helmholtz particle target FMM in R^2. Keyword interface.
+Helmholtz particle target FMM in R^2. Keyword interface.
 
-    Returns: U::FMMLIB2D.FMMOutput
+Returns: U::FMMLIB2D.FMMOutput
 """
 function hfmm2d(;
                 source::Array{Float64} = zeros(2, 0),
@@ -134,6 +135,39 @@ function hfmm2d(;
     return FMMOutput(pot, grad, hess, pottarg, gradtarg, hesstarg)
 end
 
+"""
+    U = zfmm2d(;source, target, dipstr, tol,
+                ifpot, ifgrad, ifhess,
+                ifpottarg, ifgradtarg, ifhesstarg)
+
+Complex particle target FMM in R^2. Keyword interface.
+
+Returns: U::FMMLIB2D.FMMOutput
+"""
+function zfmm2d(;
+                source::Array{ComplexF64} = complex(zeros(0)),
+                target::Array{ComplexF64} = complex(zeros(0)),
+                dipstr::Array{ComplexF64} = complex(zeros(0)),
+                tol::Float64 = 1e-15,
+                ifpot::Bool = true,
+                ifgrad::Bool = false,
+                ifhess::Bool = false,
+                ifpottarg::Bool = true,
+                ifgradtarg::Bool = false,
+                ifhesstarg::Bool = false
+                )
+    # Parse keywords
+    iprec, source, ifcharge, charge, ifdipole, dipstr, dipvec, ifpot, ifgrad, ifhess,
+    target, ifpottarg, ifgradtarg, ifhesstarg =
+        parse_keywords(tol, source, [], dipstr, [], ifpot, ifgrad, ifhess,
+                       target, ifpottarg, ifgradtarg, ifhesstarg)
+    # Call FMM and pack output
+    pot, grad, hess, pottarg, gradtarg, hesstarg = zfmm2dparttarg(iprec, source, dipstr,
+                                                                  ifpot, ifgrad, ifhess,
+                                                                  target, ifpottarg,
+                                                                  ifgradtarg, ifhesstarg)
+    return FMMOutput(pot, grad, hess, pottarg, gradtarg, hesstarg)
+end
 
 ## DIRECT INTERFACES
 
@@ -220,7 +254,7 @@ end
         lfmm2dpartself( iprec, source, ifcharge, charge, ifdipole, dipstr, dipvec, 
                         ifpot, ifgrad, ifhess)
 
-    Laplace particle FMM in R^2 (complex). Direct library interface.
+Laplace particle FMM in R^2 (complex). Direct library interface.
 """
 function lfmm2dpartself(iprec::Int64,
                         source::Array{Float64},
@@ -248,7 +282,7 @@ end
                         ifpot, ifgrad, ifhess, 
                         target, ifpottarg, ifgradtarg, ifhesstarg)
 
-    Laplace particle target FMM in R^2 (real). Direct library interface.
+Laplace particle target FMM in R^2 (real). Direct library interface.
 """
 function rfmm2dparttarg(iprec::Int64,
                         source::Array{Float64},
@@ -325,7 +359,7 @@ end
         rfmm2dpartself( iprec, source, ifcharge, charge, ifdipole, dipstr, dipvec, 
                         ifpot, ifgrad, ifhess)
 
-    Laplace particle FMM in R^2 (real). Direct library interface.
+Laplace particle FMM in R^2 (real). Direct library interface.
 """
 function rfmm2dpartself(iprec::Int64,
                         source::Array{Float64},
@@ -354,7 +388,7 @@ end
                         ifpot, ifgrad, ifhess, 
                         target, ifpottarg, ifgradtarg, ifhesstarg)
 
-    Helmholtz particle target FMM in R^2. Direct library interface.
+Helmholtz particle target FMM in R^2. Direct library interface.
 """
 function hfmm2dparttarg(iprec::Int64,
                         zk::ComplexF64,
@@ -422,6 +456,75 @@ function hfmm2dparttarg(iprec::Int64,
            ifcharge,charge,ifdipole,dipstr,dipvec,
            ifpot,pot,ifgrad,grad,ifhess,hess,
            ntarget,target,ifpottarg,pottarg,ifgradtarg,gradtarg,ifhesstarg,hesstarg
+           )
+    # Check and return
+    @assert ier == 0    
+    return pot, grad, hess, pottarg, gradtarg, hesstarg
+end
+
+
+"""
+    pot, grad, hess, pottarg, gradtarg, hesstarg = 
+        zfmm2dparttarg(iprec,
+                        source,
+                        dipstr,
+                        ifpot,
+                        ifgrad,
+                        ifhess,
+                        target,
+                        ifpottarg,
+                        ifgradtarg,
+                        ifhesstarg)
+
+Complex particle target FMM in R^2. Direct library interface.
+"""
+function zfmm2dparttarg(iprec::Int64,
+                        source::Array{ComplexF64},
+                        dipstr::Array{ComplexF64},
+                        ifpot::Int64,
+                        ifgrad::Int64,
+                        ifhess::Int64,
+                        target::Array{ComplexF64},
+                        ifpottarg::Int64,
+                        ifgradtarg::Int64,
+                        ifhesstarg::Int64)
+    # Size checks
+    nsource = length(source)
+    @assert length(dipstr) == nsource
+    ntarget = length(target)
+    # Prepare output structures, only allocate those needed
+    ier = 0
+    pot  = zeros(ComplexF64, nsource * (ifpot !=0 ? 1 : 0) )
+    grad = zeros(ComplexF64, nsource * (ifgrad!=0 ? 1 : 0) )
+    hess = zeros(ComplexF64, nsource * (ifhess!=0 ? 1 : 0) )
+    pottarg  = zeros(ComplexF64, ntarget * (ifpottarg !=0 ? 1 : 0) )
+    gradtarg = zeros(ComplexF64, ntarget * (ifgradtarg!=0 ? 1 : 0) )
+    hesstarg = zeros(ComplexF64, ntarget * (ifhesstarg!=0 ? 1 : 0) )
+    # Library call
+    ccall( (:zfmm2dparttarg_, fmmlib2d), Nothing,
+           (Ref{Int64}, # ier
+            Ref{Int64}, # iprec
+            Ref{Int64}, # nsource
+            Ref{ComplexF64}, # source
+            Ref{ComplexF64}, #dipstr
+            Ref{Int64}, # ifpot
+            Ref{ComplexF64}, # pot
+            Ref{Int64}, # ifgrad
+            Ref{ComplexF64}, #grad
+            Ref{Int64}, # ifhess
+            Ref{ComplexF64}, #hess
+            Ref{Int64}, # ntarget
+            Ref{ComplexF64}, # target
+            Ref{Int64}, # ifpottarg
+            Ref{ComplexF64}, # pottarg
+            Ref{Int64}, # ifgradtarg
+            Ref{ComplexF64}, # gradtarg
+            Ref{Int64}, # ifhesstarg
+            Ref{ComplexF64}, # hesstarg
+            ),
+           ier, iprec, nsource, source, dipstr,
+           ifpot, pot, ifgrad, grad, ifhess, hess,
+           ntarget, target, ifpottarg, pottarg, ifgradtarg, gradtarg, ifhesstarg, hesstarg
            )
     # Check and return
     @assert ier == 0    

@@ -14,8 +14,8 @@ This package currently provides interfaces to the FMM's for Laplace (real and co
 
 The most convenient way of calling them are through the Julia interfaces with keyword arguments:
 
-Real Laplace FMM:
-```
+### Real Laplace FMM:
+```julia
 U = rfmm2d(source::Array{Float64} = ...,
            target::Array{Float64} = ...,
            charge::Array{Float64} = ...,
@@ -29,36 +29,32 @@ U = rfmm2d(source::Array{Float64} = ...,
            ifgradtarg::Bool = ...,
            ifhesstarg::Bool = ...,
            )
+```
+
 Example:
+```julia
 U = fmm2d(source=x, charge=q, target=y, ifpottarg=true, tol=1e-9)
 ```
 
-Complex Laplace FMM:
-```
-U = lfmm2d(source::Array{Float64} = ...,
-           target::Array{Float64} = ...,
-           charge::Array{Complex128} = ...,
-           dipstr::Array{Complex128} = ...,
-           dipvec::Array{Float64} = ...,
-           tol::Float64 = ...,
-           ifpot::Bool = ...,
-           ifgrad::Bool = ...,
-           ifhess::Bool = ...,
-           ifpottarg::Bool = ...,
-           ifgradtarg::Bool = ...,
-           ifhesstarg::Bool = ...,
-           )
+Output format:
+```julia
+U.pot      (Nsrc)
+U.grad     (2,Nsrc)
+U.hess     (3,Nsrc)
+U.pottarg  (Ntrg)
+U.gradtarg (2,Ntrg)
+U.hesstarg (3,Ntrg)
 ```
 
-Helmholtz FMM:
-```
-U = hfmm2d(source::Array{Float64} = ...,
+
+### Complex Laplace FMM:
+```julia
+U = lfmm2d(source::Array{Float64} = ...,
            target::Array{Float64} = ...,
-           charge::Array{Complex128} = ...,
-           dipstr::Array{Complex128} = ...,
+           charge::Array{ComplexF64} = ...,
+           dipstr::Array{ComplexF64} = ...,
            dipvec::Array{Float64} = ...,
            tol::Float64 = ...,
-           zk::Complex128 = ...,
            ifpot::Bool = ...,
            ifgrad::Bool = ...,
            ifhess::Bool = ...,
@@ -69,11 +65,65 @@ U = hfmm2d(source::Array{Float64} = ...,
 ```
 
 Output format:
-```
+```julia
 U.pot      (Nsrc)
 U.grad     (2,Nsrc)
 U.hess     (3,Nsrc)
 U.pottarg  (Ntrg)
 U.gradtarg (2,Ntrg)
 U.hesstarg (3,Ntrg)
+```
+
+### Helmholtz FMM:
+```julia
+U = hfmm2d(source::Array{Float64} = ...,
+           target::Array{Float64} = ...,
+           charge::Array{ComplexF64} = ...,
+           dipstr::Array{ComplexF64} = ...,
+           dipvec::Array{Float64} = ...,
+           tol::Float64 = ...,
+           zk::ComplexF64 = ...,
+           ifpot::Bool = ...,
+           ifgrad::Bool = ...,
+           ifhess::Bool = ...,
+           ifpottarg::Bool = ...,
+           ifgradtarg::Bool = ...,
+           ifhesstarg::Bool = ...,
+           )
+```
+
+Output format:
+```julia
+U.pot      (Nsrc)
+U.grad     (2,Nsrc)
+U.hess     (3,Nsrc)
+U.pottarg  (Ntrg)
+U.gradtarg (2,Ntrg)
+U.hesstarg (3,Ntrg)
+```
+
+### Complex FMM:
+
+```julia
+U = zfmm2d(source::Array{ComplexF64} = ...,
+           target::Array{ComplexF64} = ...,
+           dipstr::Array{ComplexF64} = ...,
+           tol::Float64 = 1e-15,
+           ifpot::Bool = true,
+           ifgrad::Bool = false,
+           ifhess::Bool = false,
+           ifpottarg::Bool = true,
+           ifgradtarg::Bool = false,
+           ifhesstarg::Bool = false
+           )
+```
+
+Output format:
+```julia
+U.pot      (Nsrc)
+U.grad     (Nsrc)
+U.hess     (Nsrc)
+U.pottarg  (Ntrg)
+U.gradtarg (Ntrg)
+U.hesstarg (Ntrg)
 ```
