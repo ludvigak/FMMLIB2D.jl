@@ -1,4 +1,6 @@
 name = "FMMLIB2D"
+version = "0.3.1"
+author = "Ludvig af Klinteberg <ludvigak@kth.se>"
 uuid = "1a804d9e-d798-534b-a6a9-4525c36f0718"
 
 [deps]
