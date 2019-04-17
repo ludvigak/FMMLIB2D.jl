@@ -16,7 +16,7 @@ matrix:
   allow_failures:
   - julia: nightly
 
-comiler: gcc
+compiler: gcc
 
 ## uncomment and modify the following lines to manually install system packages
 #addons:
