@@ -16,14 +16,13 @@ matrix:
   allow_failures:
   - julia: nightly
 
-compiler: gcc
-
-## uncomment and modify the following lines to manually install system packages
-#addons:
-#  apt: # apt-get for linux
-#    packages:
-#    - gfortran
-#before_script: # homebrew for mac
+# uncomment and modify the following lines to manually install system packages
+addons:
+  apt: # apt-get for linux
+    packages:
+    - gfortran
+before_script: # homebrew for mac
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install gcc; fi
 #  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update && brew cask uninstall --force oclint && brew install gcc; fi
 
 after_success:
