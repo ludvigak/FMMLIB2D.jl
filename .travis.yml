@@ -20,6 +20,8 @@ addons:
     packages:
     - gfortran
 before_script: # homebrew for mac
+  - if [ "$TRAVIS_OS_NAME" == 'osx' ]; then brew update; fi
+  - if [ "$TRAVIS_OS_NAME" == 'osx' ]; then brew cleanup; fi
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install gcc; fi
 
 coveralls: true
