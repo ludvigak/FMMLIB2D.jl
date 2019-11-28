@@ -4,12 +4,12 @@ using Compat.Libdl
 @BinDeps.setup
 
 fmmlib2d = library_dependency("fmmlib2d")
-release = "v1.2.1"
+version = "1.2.1"
 
-provides(Sources, URI("https://github.com/ludvigak/fmmlib2d/archive/$(release).zip"),
-         fmmlib2d, unpacked_dir = "fmmlib2d-$(release)")
+provides(Sources, URI("https://github.com/ludvigak/fmmlib2d/archive/v$(release).zip"),
+         fmmlib2d, unpacked_dir = "fmmlib2d-$(version)")
 
-fmmsrcdir = joinpath(BinDeps.srcdir(fmmlib2d), "fmmlib2d-$(release)/src")
+fmmsrcdir = joinpath(BinDeps.srcdir(fmmlib2d), "fmmlib2d-$(version)/src")
 libname = "fmmlib2d." * Libdl.dlext
 libfile = joinpath(BinDeps.libdir(fmmlib2d),libname)
 buildfile = joinpath(fmmsrcdir, libname)
