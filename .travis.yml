@@ -4,8 +4,7 @@ os:
   - linux
   - osx
 julia:
-  - 1.0
-  - 1.1
+  - 1.4
   - nightly
 
 notifications:
@@ -19,9 +18,5 @@ addons:
   apt: # apt-get for linux
     packages:
     - gfortran
-before_script: # homebrew for mac
-  - if [ "$TRAVIS_OS_NAME" == 'osx' ]; then brew update; fi
-  - if [ "$TRAVIS_OS_NAME" == 'osx' ]; then brew cleanup; fi
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install gcc; fi
 
 coveralls: true
