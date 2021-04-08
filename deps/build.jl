@@ -17,7 +17,7 @@ buildfile = joinpath(fmmsrcdir, libname)
 fsrcs = "hfmm2dpart.f hfmm2drouts.f d2tstrcr_omp.f d2mtreeplot.f h2dterms.f helmrouts2d.f cdjseval2d.f hank103.f prini.f cfmm2dpart.f zfmm2dpart.f rfmm2dpart.f lfmm2dpart.f lfmm2drouts.f l2dterms.f laprouts2d.f"
 
 fsrcs = split(fsrcs, " ")
-buildcmd = `gfortran -O2 -fPIC -shared $fsrcs -o $libname`
+buildcmd = `gfortran -std=legacy -O2 -fPIC -shared $fsrcs -o $libname`
 
 provides(BuildProcess,
          (@build_steps begin
