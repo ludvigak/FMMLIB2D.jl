@@ -1,5 +1,5 @@
 using FMMLIB2D
-using Compat.Test
+using Test
 
 @testset "Laplace FMM 2D" begin
     include("laplace.jl")

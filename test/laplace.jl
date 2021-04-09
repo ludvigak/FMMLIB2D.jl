@@ -1,14 +1,10 @@
 using FMMLIB2D
 
-using Compat.LinearAlgebra
-using Compat.Random
-using Compat.Test
+using LinearAlgebra
+using Random
+using Test
 
-if VERSION < v"0.7"
-    srand(0)
-else
-    Random.seed!(0)
-end
+Random.seed!(0)
 
 # TODO: Compute gradient and hessian
 
