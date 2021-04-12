@@ -4,7 +4,7 @@
 
 This is a Julia interface to the Fast Multipole Method (FMM) library
 [FMMLIB2D](https://github.com/zgimbutas/fmmlib2d) by Leslie Greengard and Zydrunas
-Gimbutas.
+Gimbutas. Currently v1.2.3 is used.
 
 Documentation for the library can be found in the [FMMLIB2D User's Guide](https://github.com/ludvigak/fmmlib2d/blob/master/doc/fmm2dpart_manual.pdf).
 
